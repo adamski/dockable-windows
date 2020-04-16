@@ -5,7 +5,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "JDockableWindows.h"
-#include "JAdvancedDock.h"
+#include "ArrangeableDock.h"
 
 
 /**
@@ -55,7 +55,7 @@ private:
 	DockableWindowManager dockManager;
 	WindowDockVertical dock { dockManager };
 	TabDock tabDock { dockManager };
-	JAdvancedDock advancedDock{ dockManager };
+	ArrangeableDock arrangeableDock{ dockManager };
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContentComponent)
 };

@@ -2,9 +2,13 @@
 
 <JUCERPROJECT id="MSzcIi" name="DockableWindow" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.yourcompany.DockableWindow" includeBinaryInAppConfig="1"
-              jucerVersion="5.4.3">
+              jucerVersion="5.4.5">
   <MAINGROUP id="tDbEK9" name="DockableWindow">
     <GROUP id="{1E6B25AA-7F57-6CCD-FDE5-3DF45DD19917}" name="Source">
+      <FILE id="SpbUxN" name="ArrangeableDock.cpp" compile="1" resource="0"
+            file="Source/ArrangeableDock.cpp"/>
+      <FILE id="QOo86J" name="ArrangeableDock.h" compile="0" resource="0"
+            file="Source/ArrangeableDock.h"/>
       <FILE id="D7DrFd" name="JDockableWindows.cpp" compile="1" resource="0"
             file="Source/JDockableWindows.cpp"/>
       <FILE id="oMEIiJ" name="JDockableWindows.h" compile="0" resource="0"
