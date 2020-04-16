@@ -74,14 +74,14 @@ private:
 	void showDockableComponentPlacement(DockableComponentWrapper* component, Point<int> screenPosition) override;
 	void hideDockableComponentPlacement() override;
 	void startDockableComponentDrag(DockableComponentWrapper* component) override;
-	void insertNewDock(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc);
+	void insertNewColumn(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc);
 	void insertNewRow(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc);
 	bool attachDockableComponent(DockableComponentWrapper* component, Point<int> screenPosition) override;
 	void detachDockableComponent(DockableComponentWrapper* component) override;
 	void revealComponent(DockableComponentWrapper* dockableComponent) override;
 
-
 	class RowType;
+    class ColumnType;
 
 	std::vector<RowType> rows;
 	std::vector<std::unique_ptr<StretchableLayoutResizerBar>> resizers;

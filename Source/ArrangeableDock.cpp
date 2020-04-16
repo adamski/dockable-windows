@@ -13,6 +13,25 @@
 /**
 Manages a row of windows complete with vertical resizer bars.
 */
+
+class ArrangeableDock::ColumnType
+{
+public:
+    ColumnType()
+    {
+    }
+
+    // These are exclusive: either 1 or more rows, or a non-null component
+    DockableComponentWrapper* component;
+    std::vector<RowType> rows;
+
+    int getWidth()
+    {
+        // TODO: return component width or find rows width. Most likely needs to be recursive.
+    }
+
+};
+
 class ArrangeableDock::RowType
 {
 public:
@@ -36,9 +55,7 @@ public:
         return *this;
     }
 
-    typedef std::vector<DockableComponentWrapper*> ColumnDockType;
-
-    void add(ColumnDockType &&newColumnDock, int position, Component* parent)
+    void add(ColumnType &&newColumnDock, int position, Component* parent)
     {
         columns.insert(columns.begin() + position, std::move(newColumnDock));
         rebuildResizers(parent);
@@ -101,7 +118,7 @@ public:
     }
 
     std::unique_ptr<StretchableLayoutManager> layout;
-    std::vector<ColumnDockType> columns;
+    std::vector<ColumnType> columns;
     std::vector<std::unique_ptr<StretchableLayoutResizerBar>> resizers;
 };
 
@@ -304,7 +321,7 @@ void ArrangeableDock::startDockableComponentDrag(DockableComponentWrapper* compo
 {
 }
 
-void ArrangeableDock::insertNewDock(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc)
+void ArrangeableDock::insertNewColumn(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc)
 {
     auto &row = rows[loc.y];
     RowType::ColumnDockType newTabDock;
@@ -317,8 +334,15 @@ void ArrangeableDock::insertNewRow(DockableComponentWrapper* comp, ArrangeableDo
     RowType newRow;
     newRow.columns.push_back(RowType::ColumnDockType());
     newRow.columns[0].push_back(comp);
+
     rows.insert(rows.begin() + loc.y, std::move(newRow));
     rebuildRowResizers();
+
+//    RowType newRow;
+//    newRow.columns.push_back(RowType::ColumnDockType());
+//    newRow.columns[0].push_back(comp);
+//    rows.insert(rows.begin() + loc.y, std::move(newRow));
+//    rebuildRowResizers();
 }
 
 void ArrangeableDock::insertWindow(const Point<int> &screenPos, ArrangeableDockPlaces::Places places, DockableComponentWrapper* comp)
@@ -337,12 +361,12 @@ void ArrangeableDock::insertWindow(const Point<int> &screenPos, ArrangeableDockP
             break;
 
         case ArrangeableDockPlaces::left:
-            insertNewDock(comp, loc);
+            insertNewColumn(comp, loc);
             break;
 
         case ArrangeableDockPlaces::right:
             loc.x ++;
-            insertNewDock(comp, loc);
+            insertNewColumn(comp, loc);
             break;
 
         case ArrangeableDockPlaces::none:
