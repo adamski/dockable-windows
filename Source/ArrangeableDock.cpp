@@ -28,6 +28,10 @@ public:
     int getWidth()
     {
         // TODO: return component width or find rows width. Most likely needs to be recursive.
+        if (component != nullptr)
+        {
+
+        }
     }
 
 };
