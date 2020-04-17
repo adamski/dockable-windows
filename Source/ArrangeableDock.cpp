@@ -14,6 +14,7 @@
 Manages a row of windows complete with vertical resizer bars.
 */
 
+// TODO: Remove Row and ColumnTypes, replaced by layoutTree and DockableComponentList
 class ArrangeableDock::ColumnType
 {
 public:
@@ -256,7 +257,10 @@ private:
     const float padding = 4.0f;
 };
 
-ArrangeableDock::ArrangeableDock(DockableWindowManager &manager_) : DockBase(manager_, this), manager(manager_)
+ArrangeableDock::ArrangeableDock(DockableWindowManager &manager)
+        : DockBase(manager, this),
+          manager(manager),
+          dockableComponentList(layoutTree)
 {
     placementDialog = std::make_unique<ArrangeableDockPlacementDialog>();
     addChildComponent(*placementDialog);
@@ -341,12 +345,6 @@ void ArrangeableDock::insertNewRow(DockableComponentWrapper* comp, ArrangeableDo
 
     rows.insert(rows.begin() + loc.y, std::move(newRow));
     rebuildRowResizers();
-
-//    RowType newRow;
-//    newRow.columns.push_back(RowType::ColumnDockType());
-//    newRow.columns[0].push_back(comp);
-//    rows.insert(rows.begin() + loc.y, std::move(newRow));
-//    rebuildRowResizers();
 }
 
 void ArrangeableDock::insertWindow(const Point<int> &screenPos, ArrangeableDockPlaces::Places places, DockableComponentWrapper* comp)

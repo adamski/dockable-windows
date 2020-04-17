@@ -12,53 +12,9 @@
 #ifndef ADVANCEDDOCK_H_INCLUDED
 #define ADVANCEDDOCK_H_INCLUDED
 
-#include <unordered_map>
 #include "JDockableWindows.h"
+#include "DockableComponentList.h"
 
-namespace Ids
-{
-    const Identifier AppSettings("Settings");
-
-#define DECLARE_ID(name)      const Identifier name (#name)
-
-    // Types
-    DECLARE_ID (Layout);
-    DECLARE_ID (Row);
-    DECLARE_ID (Column);
-    DECLARE_ID (Component);
-
-    // Properties
-    DECLARE_ID (type);
-
-#undef DECLARE_ID
-
-//    // TODO: Use code generation to fill the graph types
-//#define DECLARE_STRING(name)      const String name (#name);
-//
-//    DECLARE_STRING(graph); // TODO: This will become temperatureGraph etc
-//    DECLARE_STRING(settings);
-//    DECLARE_STRING(terminal);
-//    DECLARE_STRING(empty);  // Test only. TODO: Remove
-//
-//#undef DECLARE_STRING
-//
-//    static std::vector<String> validComponentTypes { graph, settings, terminal, empty };
-
-
-};
-
-namespace DockableComponentTypes
-{
-    struct DockableComponentInfo
-    {
-        String title;
-        juce::Point<int> defaultSizeInUnits = {1, 1};
-    };
-
-    DockableComponentInfo info = { "test" };
-
-    std::unordered_map<String, DockableComponentInfo> types { { "graph", {"Graph"}}, { "settings", {"Settings"}}, {"terminalFeed", {"Terminal Feed" }}};
-}
 
 namespace ArrangeableDockPlaces
 {
@@ -146,6 +102,8 @@ private:
     std::vector<RowType> rows;
     std::vector<std::unique_ptr<StretchableLayoutResizerBar>> resizers;
     StretchableLayoutManager layout;
+
+    DockableComponentList dockableComponentList;
 
     void rebuildRowResizers();
 

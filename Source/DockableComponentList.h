@@ -13,6 +13,7 @@
 #include "JuceHeader.h"
 #include "ValueTreeObjectList.h"
 #include "JDockableWindows.h"
+#include "Identifiers.h"
 
 class DockableComponentList : public ValueTreeObjectList<DockableComponentWrapper>
 {
@@ -30,7 +31,9 @@ public:
 
     bool isSuitableType(const juce::ValueTree &tree) const override
     {
-        return false;
+        if (! tree.hasType(Ids::Component)) return false;
+        if (! tree.hasProperty(Ids::type)) return false;
+        return (DockableComponentTypes::types.find(tree[Ids::type].toString()) != DockableComponentTypes::types.end());
     }
 
     DockableComponentWrapper* createNewObject(const juce::ValueTree &tree) override

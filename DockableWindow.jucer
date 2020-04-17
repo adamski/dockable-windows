@@ -5,7 +5,9 @@
               jucerVersion="5.4.5">
   <MAINGROUP id="tDbEK9" name="DockableWindow">
     <GROUP id="{1E6B25AA-7F57-6CCD-FDE5-3DF45DD19917}" name="Source">
-      <FILE id="VY2en7" name="ComponentList.h" compile="0" resource="0" file="Source/ComponentList.h"/>
+      <FILE id="PUDmXf" name="Identifiers.h" compile="0" resource="0" file="Source/Identifiers.h"/>
+      <FILE id="xBblFp" name="DockableComponentList.h" compile="0" resource="0"
+            file="Source/DockableComponentList.h"/>
       <FILE id="GiMBRK" name="ValueTreeObjectList.h" compile="0" resource="0"
             file="Source/ValueTreeObjectList.h"/>
       <FILE id="SpbUxN" name="ArrangeableDock.cpp" compile="1" resource="0"
