@@ -59,10 +59,10 @@ public:
                 {
                     const ScopedLockType sl (arrayLock);
 
-                    if (index == parent.getNumChildren() - 1)
+                    //if (index == parent.getNumChildren() - 1)
                         objects.add (newObject);
-                    else
-                        objects.addSorted (*this, newObject);
+                    //else
+                    //    objects.addSorted (*this, newObject);
                 }
 
                 newObjectAdded (newObject);
@@ -74,23 +74,23 @@ public:
 
     void valueTreeChildRemoved (juce::ValueTree& exParent, juce::ValueTree& tree, int) override
     {
-        if (parent == exParent && isSuitableType (tree))
-        {
-            const int oldIndex = indexOf (tree);
-
-            if (oldIndex >= 0)
-            {
-                ObjectType* o;
-
-                {
-                    const ScopedLockType sl (arrayLock);
-                    o = objects.removeAndReturn (oldIndex);
-                }
-
-                objectRemoved (o);
-                deleteObject (o);
-            }
-        }
+//        if (parent == exParent && isSuitableType (tree))
+//        {
+//            const int oldIndex = indexOf (tree); // TODO: Use iterator here
+//
+//            if (oldIndex >= 0)
+//            {
+//                ObjectType* o;
+//
+//                {
+//                    const ScopedLockType sl (arrayLock);
+//                    o = objects.removeAndReturn (oldIndex);
+//                }
+//
+//                objectRemoved (o);
+//                deleteObject (o);
+//            }
+//        }
     }
 
     void valueTreeChildOrderChanged (juce::ValueTree& tree, int, int) override
@@ -99,7 +99,6 @@ public:
         {
             {
                 const ScopedLockType sl (arrayLock);
-                sortArray();
             }
 
             objectOrderChanged();
@@ -111,7 +110,7 @@ public:
 
     void valueTreeRedirected (juce::ValueTree&) override { jassertfalse; } // may need to add handling if this is hit
 
-    juce::Array<ObjectType*> objects;
+    juce::Array<ObjectType*> objects; // TODO: Refactor to `std::vector<std::unique_ptr<ObjectType>>`
     CriticalSectionType arrayLock;
     typedef typename CriticalSectionType::ScopedLockType ScopedLockType;
 
@@ -131,27 +130,14 @@ protected:
         return isSuitableType (v) && v.getParent() == parent;
     }
 
-    int indexOf (const juce::ValueTree& v) const noexcept
-    {
-        for (int i = 0; i < objects.size(); ++i)
-            if (objects.getUnchecked (i)->state == v)
-                return i;
-
-        return -1;
-    }
-
-    void sortArray()
-    {
-        objects.sort (*this);
-    }
-
-public:
-    int compareElements (ObjectType* first, ObjectType* second) const
-    {
-        int index1 = parent.indexOf (first->state);
-        int index2 = parent.indexOf (second->state);
-        return index1 - index2;
-    }
+//    int indexOf (const juce::ValueTree& v) const noexcept
+//    {
+//        for (int i = 0; i < objects.size(); ++i)
+//            if (objects.getUnchecked (i)->state == v)
+//                return i;
+//
+//        return -1;
+//    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValueTreeObjectList)
 };

@@ -8,39 +8,6 @@
 #include "ArrangeableDock.h"
 
 
-/**
-A really simple component we can use to test the dragging and docking.
-*/
-class ExampleDockableComponent
-	:
-	public Component
-{
-public:
-	ExampleDockableComponent(const String & componentName, const Colour & colour_)
-		:
-		colour(colour_)
-	{
-		Component::setName(componentName);
-	}
-
-	~ExampleDockableComponent()
-	{
-		jassertfalse;
-	}
-
-	void paint(Graphics & g) override
-	{
-		g.fillAll(colour);
-		g.setColour(Colours::white);
-		g.drawText("Window Content", getLocalBounds(), Justification::centred, false);
-	}
-
-private:
-	Colour colour;
-};
-
-
-
 class MainContentComponent : public Component
 {
 public:

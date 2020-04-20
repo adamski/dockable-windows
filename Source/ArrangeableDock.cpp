@@ -142,7 +142,7 @@ private:
 ArrangeableDock::ArrangeableDock(DockableWindowManager &manager)
         : DockBase(manager, this),
           manager(manager),
-          dockableComponentList(layoutTree)
+          dockableComponentList(layoutTree, manager)
 {
     placementDialog = std::make_unique<ArrangeableDockPlacementDialog>();
     addChildComponent(*placementDialog);
@@ -152,42 +152,15 @@ ArrangeableDock::~ArrangeableDock()
 {
 }
 
-ArrangeableDock::WindowLocation::WindowLocation(int y, int x, int t) : y(y), x(x), tab(t)
+
+Rectangle<int> ArrangeableDock::getWindowBoundsAtPoint(const Point<int> &point)
 {
-}
-
-ArrangeableDock::WindowLocation ArrangeableDock::getWindowLocationAtPoint(const Point<int> &screenPosition)
-{
-    auto localPos = getLocalPoint(nullptr, screenPosition);
-
-    for (int y = 0; y < rows.size(); ++ y)
-    {
-        auto &row = rows[y];
-
-        for (int x = 0; x < row.columns.size(); ++ x)
-        {
-            auto &col = row.columns[x];
-
-            for (int z = 0; z < col.size(); ++ z)
-            {
-                auto &tab = col[z];
-
-                if (tab->getBounds().contains(localPos))
-                    return {y, x, z};
-            }
-        }
-    }
-
-    return {0, 0, 0};
-}
-
-Rectangle<int> ArrangeableDock::getWindowBoundsAtPoint(const Point<int> &p)
-{
-    auto loc = getWindowLocationAtPoint(p);
+    auto loc = getWindowLocationAtPoint(point);
 
     if (rows.size() == 0)
         return getLocalBounds();
 
+    // TODO: Traverse layoutTree to find Component containing `point`
     return rows[loc.y].columns[loc.x][loc.tab]->getBounds();
 }
 
@@ -211,23 +184,23 @@ void ArrangeableDock::startDockableComponentDrag(DockableComponentWrapper* compo
 {
 }
 
-void ArrangeableDock::insertNewColumn(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc)
-{
-    auto &row = rows[loc.y];
-    RowType::ColumnDockType newTabDock;
-    newTabDock.push_back(comp);
-    row.add(std::move(newTabDock), loc.x, this);
-}
+//void ArrangeableDock::insertNewColumn(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc)
+//{
+//    auto &row = rows[loc.y];
+//    RowType::ColumnDockType newTabDock;
+//    newTabDock.push_back(comp);
+//    row.add(std::move(newTabDock), loc.x, this);
+//}
 
-void ArrangeableDock::insertNewRow(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc)
-{
-    RowType newRow;
-    newRow.columns.push_back(RowType::ColumnDockType());
-    newRow.columns[0].push_back(comp);
-
-    rows.insert(rows.begin() + loc.y, std::move(newRow));
-    rebuildRowResizers();
-}
+//void ArrangeableDock::insertNewRow(DockableComponentWrapper* comp, WindowLocation loc)
+//{
+//    RowType newRow;
+//    newRow.columns.push_back(RowType::ColumnDockType());
+//    newRow.columns[0].push_back(comp);
+//
+//    rows.insert(rows.begin() + loc.y, std::move(newRow));
+//    rebuildRowResizers();
+//}
 
 void ArrangeableDock::insertWindow(const Point<int> &screenPos, ArrangeableDockPlaces::Places places, DockableComponentWrapper* comp)
 {
@@ -263,7 +236,7 @@ void ArrangeableDock::addComponentToDock(Component* comp)
 {
     auto dockable = manager.createDockableComponent(comp);
     addAndMakeVisible(dockable);
-    auto loc = WindowLocation{0, 0, 0};
+    auto loc = WindowLocation{0, 0};
 
     insertNewRow(dockable, loc);
 
@@ -278,7 +251,7 @@ void ArrangeableDock::addComponentToNewRow(Component* component, int rowPosition
     if (rowPosition > rows.size())
         rowPosition = static_cast<int>(rows.size());
 
-    auto loc = WindowLocation{rowPosition, 0, 0};
+    auto loc = WindowLocation{rowPosition, 0};
 
     insertNewRow(dockable, loc);
 
@@ -303,45 +276,45 @@ bool ArrangeableDock::attachDockableComponent(DockableComponentWrapper* componen
 
 void ArrangeableDock::detachDockableComponent(DockableComponentWrapper* component)
 {
-    for (int y = 0; y < rows.size(); ++ y)
-    {
-        auto &row = rows[y];
-
-        for (int x = 0; x < row.columns.size(); ++ x)
-        {
-            auto &col = row.columns[x];
-
-            for (int z = 0; z < col.size(); ++ z)
-            {
-                auto &tab = col[z];
-
-                if (tab == component)
-                {
-                    col.erase(col.begin() + z);
-
-                    if (col.size() == 1)
-                    {
-                        /* remove tab buttons if we don't need them any more */
-                        col[0]->setShowTabButton(false, 0, false);
-                    }
-                    else if (col.size() == 0)
-                    {
-                        /* remove tabs, rows and columns if now empty... */
-                        row.columns.erase(row.columns.begin() + x);
-
-                        if (row.columns.size() == 0)
-                            rows.erase(rows.begin() + y);
-                    }
-
-                    row.rebuildResizers(this);
-                    rebuildRowResizers();
-                    resized();
-
-                    return;
-                }
-            }
-        }
-    }
+//    for (int y = 0; y < rows.size(); ++ y)
+//    {
+//        auto &row = rows[y];
+//
+//        for (int x = 0; x < row.columns.size(); ++ x)
+//        {
+//            auto &col = row.columns[x];
+//
+//            for (int z = 0; z < col.size(); ++ z)
+//            {
+//                auto &tab = col[z];
+//
+//                if (tab == component)
+//                {
+//                    col.erase(col.begin() + z);
+//
+//                    if (col.size() == 1)
+//                    {
+//                        /* remove tab buttons if we don't need them any more */
+//                        col[0]->setShowTabButton(false, 0, false);
+//                    }
+//                    else if (col.size() == 0)
+//                    {
+//                        /* remove tabs, rows and columns if now empty... */
+//                        row.columns.erase(row.columns.begin() + x);
+//
+//                        if (row.columns.size() == 0)
+//                            rows.erase(rows.begin() + y);
+//                    }
+//
+//                    row.rebuildResizers(this);
+//                    rebuildRowResizers();
+//                    resized();
+//
+//                    return;
+//                }
+//            }
+//        }
+//    }
 }
 
 void ArrangeableDock::revealComponent(DockableComponentWrapper* dockableComponent)
@@ -350,25 +323,25 @@ void ArrangeableDock::revealComponent(DockableComponentWrapper* dockableComponen
     resized();
 }
 
-void ArrangeableDock::rebuildRowResizers()
-{
-    const double resizerSize = 5.0;
-    resizers.clear();
-
-    int itemIndex = 0;
-
-    for (int pos = 0; pos < rows.size(); ++ pos)
-    {
-        layout.setItemLayout(itemIndex ++, 10.0, 2000.0, rows[0].columns[0][0]->getHeight());
-
-        if (pos < rows.size() - 1)
-        {
-            resizers.push_back(std::make_unique<StretchableLayoutResizerBar>(&layout, pos * 2 + 1, false));
-            addAndMakeVisible(resizers.back().get());
-            layout.setItemLayout(itemIndex ++, resizerSize, resizerSize, resizerSize);
-        }
-    }
-}
+//void ArrangeableDock::rebuildRowResizers()
+//{
+//    const double resizerSize = 5.0;
+//    resizers.clear();
+//
+//    int itemIndex = 0;
+//
+//    for (int pos = 0; pos < rows.size(); ++ pos)
+//    {
+//        layout.setItemLayout(itemIndex ++, 10.0, 2000.0, rows[0].columns[0][0]->getHeight());
+//
+//        if (pos < rows.size() - 1)
+//        {
+//            resizers.push_back(std::make_unique<StretchableLayoutResizerBar>(&layout, pos * 2 + 1, false));
+//            addAndMakeVisible(resizers.back().get());
+//            layout.setItemLayout(itemIndex ++, resizerSize, resizerSize, resizerSize);
+//        }
+//    }
+//}
 
 //void ArrangeableDock::layoutRows(const Rectangle<int> &area)
 //{
@@ -396,24 +369,22 @@ void ArrangeableDock::rebuildRowResizers()
 // TODO: Search layoutTree recursively
 void ArrangeableDock::resized()
 {
-    if (rows.size() == 0)
+    if (layoutTree.getNumChildren() == 0)
         return;
 
     auto area = getLocalBounds();
 
-    for (auto &resizer : resizers)
-        resizer->setSize(area.getWidth(), 5);
 
-    layoutRows(area);
+//    layoutRows(area);
 
-    for (auto &row : rows)
+    for (auto row : layoutTree)
     {
-        if (row.columns.size() == 0)
+        if (row.getNumChildren() == 0)
             continue; // shouldn't happen, but just for safety...
 
-        auto area2 = row.columns[0][0]->getBounds().withWidth(area.getWidth()).withX(0); // the first component will have had bounds set by the row resizer so we copy these over.
+        //auto area2 = row.columns[0][0]->getBounds().withWidth(area.getWidth()).withX(0); // the first component will have had bounds set by the row resizer so we copy these over.
 
-        row.layoutColumns(area2);
+        //row.layoutColumns(area2);
     }
 }
 

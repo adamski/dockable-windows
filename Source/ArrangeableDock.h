@@ -14,6 +14,7 @@
 
 #include "JDockableWindows.h"
 #include "DockableComponentList.h"
+#include "WindowLocation.h"
 
 
 namespace ArrangeableDockPlaces
@@ -59,14 +60,7 @@ public:
     void paint(Graphics &g) override;
 
 private:
-    struct WindowLocation
-    {
-        WindowLocation(int y, int x, int t);
 
-        int y{0};
-        int x{0};
-        int tab{0};
-    };
 
     WindowLocation getWindowLocationAtPoint(const Point<int> &screenPosition);
 
@@ -83,9 +77,9 @@ private:
 
     void startDockableComponentDrag(DockableComponentWrapper* component) override;
 
-    void insertNewColumn(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc);
+    void insertNewColumn(DockableComponentWrapper* comp, WindowLocation loc);
 
-    void insertNewRow(DockableComponentWrapper* comp, ArrangeableDock::WindowLocation loc);
+    void insertNewRow(DockableComponentWrapper* comp, WindowLocation loc);
 
     bool attachDockableComponent(DockableComponentWrapper* component, Point<int> screenPosition) override;
 
@@ -104,10 +98,6 @@ private:
     StretchableLayoutManager layout;
 
     DockableComponentList dockableComponentList;
-
-    void rebuildRowResizers();
-
-    void layoutRows(const Rectangle<int> &area);
 
     DockableWindowManager &manager;
     std::unique_ptr<ArrangeableDockPlacementDialog> placementDialog;

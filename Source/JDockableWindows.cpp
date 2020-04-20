@@ -237,7 +237,7 @@ DockableComponentWrapper::DockableComponentWrapper(DockableWindowManager & manag
 	addAndMakeVisible(titleBar);
 }
 
-DockableComponentWrapper::DockableComponentWrapper(DockableWindowManager&manager_, Component* contentComponentUnowned)
+DockableComponentWrapper::DockableComponentWrapper(DockableWindowManager& manager_, Component* contentComponentUnowned)
 	:
 	manager(manager_)
 {

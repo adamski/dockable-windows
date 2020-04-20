@@ -15,6 +15,7 @@
 #include "JDockableWindows.h"
 #include "Identifiers.h"
 #include "Column.h"
+#include "ArrangeableDock.h"
 
 /**
 Manages a row of windows complete with vertical resizer bars.
@@ -40,11 +41,12 @@ public:
         return *this;
     }
 
-    void add(ColumnType &&newColumnDock, int position, Component* parent)
+    void insertNewColumn(DockableComponentWrapper* comp, int index)
     {
-        ValueTree column (Ids::Column);
-        layoutTree.addChild(column, position, nullptr);
-        rebuildResizers(parent); // TODO: this should go into the ValueTreeObjectList
+        jassert(loc.y < layoutTree.getNumChildren());
+        jassert(layoutTree.getChild(loc.y).hasType(Ids::Row));
+        auto rowTree = layoutTree.getChild(loc.y);
+        layoutTree.
     }
 
     /**
@@ -72,7 +74,9 @@ public:
                                      area.getX(), area.getY(), area.getWidth(), area.getHeight(), false, true);
         }
 
-        /* Make all other tabs match our new size...*/
+
+
+        /* Make all other columns match our new size...*/
         for (auto &c : columns)
         {
             if (c.size() > 1)

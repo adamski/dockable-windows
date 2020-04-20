@@ -1,38 +1,37 @@
 /*
-  ==============================================================================
+  =============================================================================
 
-    Column.h
-    Created: 20 Apr 2020 11:49:53am
-    Author:  Adam Wilson
+    Column.
+    Created: 20 Apr 2020 11:49:53a
+    Author:  Adam Wilso
 
-  ==============================================================================
-*/
+  =============================================================================
+*
 
-#pragma once
+#pragma onc
 
 #include "JuceHeader.h"
 #include "Row.h"
 
-class ColumnType
+class:ColumnType
 {
 public:
-    ColumnType(ValueTree& layoutTree) : layoutTree(layoutTree)
+    ColumnTypeValueTree& layoutTree) : layoutTree(layoutTree()
     {
     }
 
     int getWidth()
     {
         // TODO: return component width or find rows width. Most likely needs to be recursive.
-        return 10;
+       return 10;
     }
 
     void layoutRows(const Rectangle<int> &area)
     {
-        std::vector<Component*> comps;
+        std::vector<Ccomponen*> comps;
 
-        for (int i = 0; i < rows.size(); ++ i)
-        {
-            comps.push_back(rows[i].columns.front().front());
+        for (int i = 0; i < rows.size(); ++ ir)
+        {            comps.push_back(rows[i].columns.front().front());
 
             if (i < resizers.size())
                 comps.push_back(resizers[i].get());
@@ -46,6 +45,26 @@ public:
         {
             layout.layOutComponents(comps.data(), comps.size(),
                                     area.getX(), area.getY(), area.getWidth(), area.getHeight(), true, false);
+
+        }
+    }
+    void rebuildRowResizers()
+    {
+        const double resizerSize = 5.0;
+        resizers.clear();
+
+        int itemIndex = 0;
+
+        for (int pos = 0; pos < rows.size(); ++ pos)
+        {
+            layout.setItemLayout(itemIndex ++, 10.0, 2000.0, rows[0].columns[0][0]->getHeight());
+
+            if (pos < rows.size() - 1)
+            {
+                resizers.push_back(std::make_unique<StretchableLayoutResizerBar>(&layout, pos * 2 + 1, false));
+                addAndMakeVisible(resizers.back().get());
+                layout.setItemLayout(itemIndex ++, resizerSize, resizerSize, resizerSize);
+            }
         }
     }
 
