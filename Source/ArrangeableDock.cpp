@@ -11,124 +11,6 @@
 #include "ArrangeableDock.h"
 
 /**
-Manages a row of windows complete with vertical resizer bars.
-*/
-
-// TODO: Remove Row and ColumnTypes, replaced by layoutTree and DockableComponentList
-class ArrangeableDock::ColumnType
-{
-public:
-    ColumnType()
-    {
-    }
-
-    // These are exclusive: either 1 or more rows, or a non-null component
-    DockableComponentWrapper* component;
-    std::vector<RowType> rows;
-
-    int getWidth()
-    {
-        // TODO: return component width or find rows width. Most likely needs to be recursive.
-        if (component != nullptr)
-        {
-
-        }
-    }
-
-};
-
-class ArrangeableDock::RowType
-{
-public:
-    RowType()
-    {
-        layout = std::make_unique<StretchableLayoutManager>();
-    }
-
-    RowType(RowType &&rhs)
-    {
-        resizers = std::move(rhs.resizers);
-        columns = std::move(rhs.columns);
-        layout = std::move(rhs.layout);
-    }
-
-    RowType &operator=(RowType &&rhs)
-    {
-        resizers = std::move(rhs.resizers);
-        columns = std::move(rhs.columns);
-        layout = std::move(rhs.layout);
-        return *this;
-    }
-
-    void add(ColumnType &&newColumnDock, int position, Component* parent)
-    {
-        columns.insert(columns.begin() + position, std::move(newColumnDock));
-        rebuildResizers(parent);
-    }
-
-    /**
-    Called from the docks resize method.
-
-    @note this and the layoutRows() function are similar, but not similar enough...
-    */
-    void layoutColumns(const Rectangle<int> &area)
-    {
-        std::vector<Component*> comps;
-
-        for (int i = 0; i < columns.size(); ++ i)
-        {
-            comps.push_back(columns[i].front());
-
-            if (i < resizers.size())
-                comps.push_back(resizers[i].get());
-        }
-
-        if (comps.size() == 1)
-        {
-            comps[0]->setBounds(area); // layoutComponents doesn't seem to cope with only one component passed to it.
-        }
-        else
-        {
-            layout->layOutComponents(comps.data(), static_cast<int>(comps.size()),
-                                     area.getX(), area.getY(), area.getWidth(), area.getHeight(), false, true);
-        }
-
-        /* Make all other tabs match our new size...*/
-        for (auto &c : columns)
-        {
-            if (c.size() > 1)
-                for (auto &t : c)
-                    t->setBounds(c[0]->getBounds());
-        }
-    }
-
-    void rebuildResizers(Component* parent)
-    {
-        const double resizerWidth = 5.0;
-        resizers.clear();
-
-        int itemIndex = 0;
-
-        for (int pos = 0; pos < columns.size(); ++ pos)
-        {
-            layout->setItemLayout(itemIndex ++, 10.0, 2000.0, columns[pos][0]->getWidth());
-
-            if (pos < columns.size() - 1)
-            {
-                resizers.push_back(std::make_unique<StretchableLayoutResizerBar>(layout.get(), pos * 2 + 1, true));
-                parent->addAndMakeVisible(resizers.back().get());
-                layout->setItemLayout(itemIndex ++, resizerWidth, resizerWidth, resizerWidth);
-            }
-        }
-    }
-
-    std::unique_ptr<StretchableLayoutManager> layout;
-    std::vector<ColumnType> columns;
-    std::vector<std::unique_ptr<StretchableLayoutResizerBar>> resizers;
-};
-
-
-/**
 Displays some buttons that let the user decide where they want to place the window.
 */
 class ArrangeableDockPlacementDialog
@@ -488,29 +370,30 @@ void ArrangeableDock::rebuildRowResizers()
     }
 }
 
-void ArrangeableDock::layoutRows(const Rectangle<int> &area)
-{
-    std::vector<Component*> comps;
+//void ArrangeableDock::layoutRows(const Rectangle<int> &area)
+//{
+//    std::vector<Component*> comps;
+//
+//    for (int i = 0; i < rows.size(); ++ i)
+//    {
+//        comps.push_back(rows[i].columns.front().front());
+//
+//        if (i < resizers.size())
+//            comps.push_back(resizers[i].get());
+//    }
+//
+//    if (comps.size() == 1)
+//    {
+//        comps[0]->setBounds(area); // layoutComponents doesn't seem to cope with only one component passed to it.
+//    }
+//    else
+//    {
+//        layout.layOutComponents(comps.data(), comps.size(),
+//                                area.getX(), area.getY(), area.getWidth(), area.getHeight(), true, false);
+//    }
+//}
 
-    for (int i = 0; i < rows.size(); ++ i)
-    {
-        comps.push_back(rows[i].columns.front().front());
-
-        if (i < resizers.size())
-            comps.push_back(resizers[i].get());
-    }
-
-    if (comps.size() == 1)
-    {
-        comps[0]->setBounds(area); // layoutComponents doesn't seem to cope with only one component passed to it.
-    }
-    else
-    {
-        layout.layOutComponents(comps.data(), comps.size(),
-                                area.getX(), area.getY(), area.getWidth(), area.getHeight(), true, false);
-    }
-}
-
+// TODO: Search layoutTree recursively
 void ArrangeableDock::resized()
 {
     if (rows.size() == 0)
